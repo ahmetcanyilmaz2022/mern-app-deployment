@@ -1,0 +1,29 @@
+pipeline {
+    agent any
+    stages {
+        stage('Checkout') {
+            steps {
+                git 'https://github.com/your-username/mern-app-deployment.git'
+            }
+        }
+        stage('Build Docker Images') {
+            steps {
+                sh 'docker build -t ahmetcan2022/mern-frontend:latest frontend/'
+                sh 'docker build -t ahmetcan2022/mern-backend:latest backend/'
+            }
+        }
+        stage('Push to Docker Hub') {
+            steps {
+                sh 'docker login -u ahmetcan2022 -p <dockerhub-password>'
+                sh 'docker push ahmetcan2022/mern-frontend:latest'
+                sh 'docker push ahmetcan2022/mern-backend:latest'
+            }
+        }
+        stage('Deploy to Kubernetes') {
+            steps {
+                sh 'kubectl apply -f k8s/'
+            }
+        }
+    }
+}
+
